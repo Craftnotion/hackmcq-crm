@@ -78,4 +78,21 @@ module.exports = createCoreController('api::blog.blog', ({ strapi }) => ({
     }
   },
 
+  // Get all blog slugs (only published)
+  async getSlugs(ctx) {
+    try {
+      const blogs = await strapi.db.query('api::blog.blog').findMany({
+        where: { publishedAt: { $notNull: true } },
+        select: ['slug'],
+      });
+
+      const slugs = blogs.map(blog => blog.slug);
+
+      return { data: slugs };
+    } catch (error) {
+      console.error('Error fetching blog slugs:', error);
+      return ctx.internalServerError('Unable to fetch blog slugs');
+    }
+  },
+
 }));

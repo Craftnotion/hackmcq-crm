@@ -27,5 +27,13 @@ module.exports = {
         auth: false,
       },
     },
+    {
+      method: 'GET',
+      path: '/blogs/slugs/all',
+      handler: 'blog.getSlugs',
+      config: {
+        auth: false,
+      },
+    },
   ],
 };
