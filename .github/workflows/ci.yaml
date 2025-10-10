@@ -1,0 +1,46 @@
+name: HackMCQ
+
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: 
+      labels: [ e2e ]
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - name: Git Initialize
+        working-directory: /var/www/html/backend/hackmcq/crm
+        run: |
+          git checkout main 
+          git pull origin main
+
+      - name: Install Dependencies and Build
+        working-directory: /var/www/html/backend/hackmcq/crm
+        run: |
+          yarn install
+          yarn build
+
+      - name: Graceful Process Termination
+        working-directory: /var/www/html/frontend/craftnotion
+        run: |
+          # Ensure clean slate for services
+          pm2 delete all || true
+          yarn run stop || true
+          sudo sh -c 'pkill -9 node || true' ; echo $?
+          sudo sh -c 'pkill -9 next || true' ; echo $?
+          sudo sh -c 'pkill -9 nest || true' ; echo $?
+
+      - name: Restart Services
+        working-directory: /var/www/html/frontend/craftnotion
+        env:
+          # Unset RUNNER_TRACKING_ID to prevent interference
+          RUNNER_TRACKING_ID: ""
+        run: |
+          # Ensure services start without tracking
+          yarn run start-websites
+
