@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     runs-on: 
-      labels: [ e2e ]
+      labels: [ e2 ]
 
     strategy:
       matrix:
